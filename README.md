@@ -9,27 +9,26 @@ PHP PDO has to be loaded.
 
 ## Quickstart
 
-- require library file\\
+- require library file  
 `require('path/to/database.class.php');`
 
-- create a Database Object
+- create a Database Object  
 `$database= new MhDb\DatabaseConfig(dbhost,dbname,dbuser,dbpass);`
 
-- create a SqlStatement Object
+- create a SqlStatement Object  
 `$statement= new MhDb\SqlStatement($database);`
 
-- add sql expression to your statement
+- add sql expression to your statement  
 `$statment=$statement->select('*')->from('tables')->where('column','value);`
 
-- execute statement to receive associative array
+- execute statement to receive associative array  
 `$result= $statement->fetch();`
 
-- iterate over $result to work with entries
+- iterate over $result to work with entries  
 `foreach($result as $key=>$entry){ /*code here */ }`
 
 By default a sqlStatement is executed as prepared statement to prevent SQL injections.
-You can disable this before adding expressions by calling
-`$statement->prepared(false);`
+You can disable this before adding expressions by calling `$statement->prepared(false);`
 Warning: you actually should not do this.
 
 By default a sqlStatement can only be used one time and is then marked as consumed. It can not be reused afterwards. You can disable this by calling `$statement->enableConsumption(false);`
