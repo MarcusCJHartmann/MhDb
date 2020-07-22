@@ -74,10 +74,15 @@ class DatabaseConfig {
 		
 		try {
 			$pdo = new \PDO($dsn, $this->dbuser, $this->dbpass,$options);
+			
 			$result=null;
-
+			if($sqlStatement->getFetchClass()!=null){
+					$sth->setFetchMode( PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $sqlStatement->getClass());
+			}
 			if($sqlStatement->isPrepared()){
 				$resultSet=$pdo->prepare($sqlStatement->getStatement());
+				
+				
 				$resultSet->execute($sqlStatement->getPreparedData());
 				
 				if("SELECT"==$crudType=$sqlStatement->getCrudType()){
@@ -87,7 +92,8 @@ class DatabaseConfig {
 						$out[]=$row;
 					}
 					$pdo=null;
-					return $out;
+					$result= new SqlResultSet($out);
+					return $result;
 				}
 			}else{
 				$resultSet=$pdo->query($sqlStatement->getStatement());
@@ -97,8 +103,9 @@ class DatabaseConfig {
 						$out[]=$row;
 					}
 					$pdo=null;
+					$result= new SqlResultSet($out);
 					unset($sqlStatement);
-					return $out;
+					return $result;
 				}
 			}		
 		} catch (\PDOException $e) {
@@ -114,6 +121,7 @@ class SqlStatement {
 	private $preparedData=array();
 	private $enableConsumption=true;
 	private $consumed=false;
+	private $fetchClass=null;
 	
 	private $prepared=true;
 	private $sanitizeSqlStatements=true;
@@ -315,7 +323,11 @@ class SqlStatement {
 		return $this;
 	}
 	
-	public function fetch(){
+	public function fetch($class=null){
+		
+		if($class!=null){
+			$this->class=$class;
+		}
 		if($this->database==null){
 			throw new \Exception("Missing database in SqlStatement. Make sure to set a default database in DatabaseUtils or give Database Object to SqlStatement");
 		}
@@ -326,9 +338,14 @@ class SqlStatement {
 		return $result;
 	}
 	//alias for fetch
-	public function query(){
-		return $this->fetch();
+	public function query($class){
+		return $this->fetch($class);
 	}
+	
+	public function getFetchClass(){
+		return $this->fetchClass;
+	}
+	
 	
 	private function addExpression($sqlExpression,$expressionString){
 		$this->checkIfConsumed();
@@ -344,5 +361,44 @@ class SqlStatement {
 	
 	private function setConsumed(){
 		$this->consumed=true;
+	}
+	
+	
+}
+
+
+class SqlResultSet implements \Iterator{
+	private $resultSet=array();
+	
+	function __construct($resultSet){
+		$this->resultSet =$resultSet;
+	}
+	
+	public function rewind() {
+        reset($this->resultSet);
+    }
+
+    public function current() {
+        $current = current($this->resultSet);
+        return $current;
+    }
+
+    public function key() {
+        $key = key($this->resultSet);
+        return $key;
+    }
+
+    public function next() {
+        $next = next($this->resultSet);
+        return $next;
+    }
+
+    public function valid() {
+        $valid = $this->current() !== false;
+        return $valid;
+    }
+	
+	public function length(){
+		return count($this->resultSet);
 	}
 }
