@@ -9,7 +9,7 @@ PHP PDO has to be loaded.
 
 ## Quickstart
 
-- require library file
+- require library file\\
 `require('path/to/database.class.php');`
 
 - create a Database Object
