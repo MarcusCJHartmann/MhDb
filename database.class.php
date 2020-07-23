@@ -60,6 +60,26 @@ abstract class DatabaseUtils
     }
 }
 
+abstract class SqlSanitizer{
+    
+    
+    public static function sanitize($input){
+        if(is_array($input)){
+            foreach($input as $key=>$value){
+                $input[$key]=SqlSanitizer::sanitize($value);
+            }
+        }else{
+            $value=htmlspecialchars($value,ENT_QUOTES);
+            $value=str_replace("\n","",$value);
+            $value=escapeshellarg($value);
+            return $value;
+        }
+        
+    }
+    
+}
+
+
 /**
  * Class to manage the login credentials of a single database.
  * Handles the PDO execution.
@@ -227,7 +247,7 @@ class SqlStatement
     {
         return $this->crudType;
     }
-
+    
     /**
      * @param boolean $bool
      */
