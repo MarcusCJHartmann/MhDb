@@ -76,19 +76,23 @@ class DatabaseConfig {
 			$pdo = new \PDO($dsn, $this->dbuser, $this->dbpass,$options);
 			
 			$result=null;
-			if($sqlStatement->getFetchClass()!=null){
-					$sth->setFetchMode( PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $sqlStatement->getClass());
-			}
+			
+			
 			if($sqlStatement->isPrepared()){
-				$resultSet=$pdo->prepare($sqlStatement->getStatement());
+				$pdostmt=$pdo->prepare($sqlStatement->getStatement());
 				
 				
-				$resultSet->execute($sqlStatement->getPreparedData());
+				$pdostmt->execute($sqlStatement->getPreparedData());
 				
 				if("SELECT"==$crudType=$sqlStatement->getCrudType()){
-					$rows = $resultSet->fetchAll(\PDO::FETCH_ASSOC);
+					
+					if($sqlStatement->getFetchClass()!=null){
+						$resultSet = $pdostmt->fetchAll(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, $sqlStatement->getFetchClass());
+					}else{
+						$resultSet = $pdostmt->fetchAll(\PDO::FETCH_ASSOC);
+					}
 					$out=array();
-					foreach($rows as $row){
+					foreach($resultSet as $row){
 						$out[]=$row;
 					}
 					$pdo=null;
@@ -96,7 +100,12 @@ class DatabaseConfig {
 					return $result;
 				}
 			}else{
-				$resultSet=$pdo->query($sqlStatement->getStatement());
+				if($sqlStatement->getFetchClass()!=null){
+						$resultSet = $pdo->query($sqlStatement->getStatement(),\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, $sqlStatement->getFetchClass());
+					}else{
+						$resultSet=$pdo->query($sqlStatement->getStatement(),\PDO::FETCH_ASSOC);
+					}
+				
 				if("SELECT"==$crudType=$sqlStatement->getCrudType()){
 					$out=array();
 					foreach($resultSet as $row){
@@ -148,8 +157,6 @@ class SqlStatement {
 	public function getCrudType(){
 		return $this->crudType;
 	}
-	
-	
 	
 	public function enableConsumption($bool){
 		$this->enableConsumption=$bool;
@@ -323,11 +330,7 @@ class SqlStatement {
 		return $this;
 	}
 	
-	public function fetch($class=null){
-		
-		if($class!=null){
-			$this->class=$class;
-		}
+	public function fetch(){
 		if($this->database==null){
 			throw new \Exception("Missing database in SqlStatement. Make sure to set a default database in DatabaseUtils or give Database Object to SqlStatement");
 		}
@@ -338,9 +341,23 @@ class SqlStatement {
 		return $result;
 	}
 	//alias for fetch
-	public function query($class){
-		return $this->fetch($class);
+	public function query(){
+		return $this->fetch();
 	}
+	
+	public function fetchAs($class=null){
+		if($class!=null){
+			$this->fetchClass=$class;
+		}
+		return $this->fetch();
+	}
+	
+	//alias for fetch
+	public function queryAs($class){
+		return $this->fetchAs($class);
+	}
+	
+	
 	
 	public function getFetchClass(){
 		return $this->fetchClass;
