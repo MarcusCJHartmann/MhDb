@@ -2,10 +2,8 @@
 namespace MhDb;
 
 /**
- * Helper to store multiple database credentials
- *
  * @author MarcusCJHartmann
- *        
+ * Helper to store multiple database credentials
  */
 abstract class DatabaseUtils
 {
@@ -14,12 +12,20 @@ abstract class DatabaseUtils
 
     private static $defaultDatabaseConfig;
 
-    public static function addDatabaseConfig($name, $database)
+    /**
+     * @param string $name
+     * @param DatabaseConfig $database
+     */
+    public static function addDatabaseConfig($name, DatabaseConfig $database)
     {
         self::$databaseConfigs[$name] = $database;
     }
 
-    public static function setDefaultDatabaseConfig($name)
+    /**
+     * @param string $name
+     * @throws \Exception
+     */
+    public static function setDefaultDatabaseConfig(string $name)
     {
         if (key_exists($name, self::$databaseConfigs)) {
             self::$defaultDatabaseConfig = $name;
@@ -28,6 +34,10 @@ abstract class DatabaseUtils
         }
     }
 
+    /**
+     * @throws \Exception
+     * @return mixed
+     */
     public static function getDefaultDatabaseConfig()
     {
         if (key_exists(self::$defaultDatabaseConfig, self::$databaseConfigs)) {
@@ -36,6 +46,11 @@ abstract class DatabaseUtils
         throw new \Exception("Default DatabaseConfig is not set.");
     }
 
+    /**
+     * @param string $name
+     * @throws \Exception
+     * @return mixed
+     */
     public static function getDatabaseConfig($name)
     {
         if (key_exists($name, self::$databaseConfigs)) {
@@ -44,12 +59,22 @@ abstract class DatabaseUtils
         throw new \Exception("DatabaseConfig with name '$name' does not exist.");
     }
 
+    /**
+     * @param string $haystack
+     * @param string $needle
+     * @return boolean
+     */
     public static function startsWith($haystack, $needle)
     {
         $length = strlen($needle);
         return (substr($haystack, 0, $length) === $needle);
     }
 
+    /**
+     * @param string $haystack
+     * @param string $needle
+     * @return boolean
+     */
     public static function endsWith($haystack, $needle)
     {
         $length = strlen($needle);
@@ -62,7 +87,6 @@ abstract class DatabaseUtils
 
 abstract class SqlSanitizer{
     
-    
     public static function sanitize($input){
         if(is_array($input)){
             foreach($input as $key=>$value){
@@ -74,19 +98,15 @@ abstract class SqlSanitizer{
             $value=escapeshellarg($value);
             return $value;
         }
-        
     }
-    
 }
 
 
 /**
+ * @author MarcusCJHartmann
  * Class to manage the login credentials of a single database.
  * Handles the PDO execution.
  * Should not be touched by the developer directly.
- *
- * @author MarcusCJHartmann
- *        
  */
 class DatabaseConfig
 {
@@ -181,10 +201,8 @@ class DatabaseConfig
 }
 
 /**
- * Class to create a SQL-Statement, execute it and get a result set from the database. Use this to talk to your database!
- *
  * @author MarcusCJHartmann
- *        
+ * Class to create a SQL-Statement, execute it and get a result set from the database. Use this to talk to your database!
  */
 class SqlStatement
 {
@@ -628,7 +646,6 @@ class SqlStatement
 /**
  * @author MarcusCJHartmann
  * @desc A container class that is returned by <code>SqlStatement::fetch</code> or <code>SqlStatement::fetchAs</code>. Can be iterated by foreach loop
- *
  */
 class SqlResultSet implements \Iterator
 {
