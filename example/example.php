@@ -1,5 +1,6 @@
 <?php
-include("database.class.php");
+include("../database.class.php");
+include ("book.class.php");
 
 use \MhDb\DatabaseUtils;
 use \MhDb\DatabaseConfig;
@@ -11,9 +12,9 @@ DatabaseUtils::setDefaultDatabaseConfig("main");
 
 $statement = new SqlStatement();
 
-$statement->prepared(false);
-$statement->select("*")->from("buecher")->where("titel","=","test")->and()->where("id","!=",1);
-$result=$statement->fetch();
+$statement->prepared(true);
+$statement->select("*")->from("books")->where("title","=","test")->and()->where("id","!=",1);
+$result=$statement->fetchAs("book");
 foreach($result as $key=>$entry){
 	print_r($entry);
 }
