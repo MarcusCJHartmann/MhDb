@@ -82,7 +82,9 @@ MhDB brings a set of tools to handle multiple databases at a time without creati
 
 `MhDb\SqlStatement::query()` alias to `MhDb\SqlStatement::fetch()`
 
+`MhDb\SqlStatement::fetchAs($class)` executes the sql statement and returns some good database content mapped on an instance of an given class name.
 
+`MhDb\SqlStatement::queryAs($class)` alias to `MhDb\SqlStatement::fetchAs()`
 
 
 
