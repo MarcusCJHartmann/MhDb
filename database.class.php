@@ -93,10 +93,9 @@ abstract class SqlSanitizer{
                 $input[$key]=SqlSanitizer::sanitize($value);
             }
         }else{
-            $value=htmlspecialchars($value,ENT_QUOTES);
-            $value=str_replace("\n","",$value);
-            $value=escapeshellarg($value);
-            return $value;
+            $input=htmlspecialchars($input,ENT_QUOTES);
+            $input=str_replace("\n","",$input);
+            return $input;
         }
     }
 }
@@ -421,6 +420,9 @@ class SqlStatement
      */
     public function where($column, $operator, $value)
     {
+    	if($this->sanitizeSqlStatements){
+    		$value=SqlSanitizer::sanitize($value);
+    	}
         if ("AND" == $this->lastExpression || "OR" == $this->lastExpression) {
             $where = "";
         } else {
