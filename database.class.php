@@ -356,13 +356,10 @@ class SqlStatement {
 	public function queryAs($class){
 		return $this->fetchAs($class);
 	}
-	
-	
-	
+
 	public function getFetchClass(){
 		return $this->fetchClass;
 	}
-	
 	
 	private function addExpression($sqlExpression,$expressionString){
 		$this->checkIfConsumed();
@@ -379,8 +376,6 @@ class SqlStatement {
 	private function setConsumed(){
 		$this->consumed=true;
 	}
-	
-	
 }
 
 
