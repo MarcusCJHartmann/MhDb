@@ -89,6 +89,7 @@ abstract class SqlSanitizer {
 			foreach ( $input as $key => $value ) {
 				$input [$key] = SqlSanitizer::sanitize ( $value );
 			}
+			return $input;
 		} elseif (is_string ( $input )) {
 			$input = htmlspecialchars ( $input, ENT_QUOTES );
 			$input = str_replace ( "\n", "", $input );
@@ -397,6 +398,7 @@ class SqlStatement {
 				$this->preparedData [] = $entry;
 			}
 		} else {
+			array_walk($valuesArgs, function(&$value, $key) { $value = '"'.$value.'"'; });
 			$values .= "(" . implode ( ",", $valuesArgs ) . ")";
 			$this->addExpression ( "VALUES", $values );
 		}
