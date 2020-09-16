@@ -551,6 +551,15 @@ class SqlStatement {
 		return $this;
 	}
 	
+	public function limit($limit,$offset=null){
+		$exp=$limit;
+		if($offset!=null){
+			$exp=$limit.", ".$offset;
+		}
+		$this->addExpression("LIMIT","LIMIT ". $exp);
+		return $this;
+	}
+	
 	/**
 	 *
 	 * @return string
