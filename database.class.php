@@ -147,7 +147,7 @@ class DatabaseConfig {
 			
 			if ($sqlStatement->isPrepared ()) {
 							
-				$pdostmt = $pdo->prepare ($sqlStatement->getStatement (););
+				$pdostmt = $pdo->prepare ($sqlStatement->getStatement ());
 				
 				$pdostmt->execute ( $sqlStatement->getPreparedData () );
 				
@@ -171,9 +171,9 @@ class DatabaseConfig {
 				
 				if ($sqlStatement->getFetchClass () != null) {
 					
-					$resultSet = $pdo->query ( $sqlStatement->getCrudType()), \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $sqlStatement->getFetchClass () );
+					$resultSet = $pdo->query ( $sqlStatement->getCrudType(), \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $sqlStatement->getFetchClass () );
 				} else {
-					$resultSet = $pdo->query ( $sqlStatement->getCrudType()), \PDO::FETCH_ASSOC );
+					$resultSet = $pdo->query ( $sqlStatement->getCrudType(), \PDO::FETCH_ASSOC );
 				}
 				if ("SELECT" == $sqlStatement->getCrudType ()||"INSERT" == $sqlStatement->getCrudType ()) {
 					$out = array ();
