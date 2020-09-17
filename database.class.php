@@ -146,11 +146,15 @@ class DatabaseConfig {
 			$result = null;
 			
 			if ($sqlStatement->isPrepared ()) {
-				$pdostmt = $pdo->prepare ( $sqlStatement->getStatement () );
+				$statementString=$sqlStatement->getStatement ();
+				if("INSERT"==$sqlStatement->getCrudType()){
+					$statementString.="SELECT LAST_INSERT_ID();";
+				}
+				$pdostmt = $pdo->prepare ($statementString);
 				
 				$pdostmt->execute ( $sqlStatement->getPreparedData () );
 				
-				if ("SELECT" == $sqlStatement->getCrudType ()) {
+				if ("SELECT" == $sqlStatement->getCrudType ()||"INSERT" == $sqlStatement->getCrudType ()) {
 					
 					if ($sqlStatement->getFetchClass () != null) {
 						$resultSet = $pdostmt->fetchAll ( \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $sqlStatement->getFetchClass () );
@@ -166,12 +170,17 @@ class DatabaseConfig {
 					return $result;
 				}
 			} else {
-				if ($sqlStatement->getFetchClass () != null) {
-					$resultSet = $pdo->query ( $sqlStatement->getStatement (), \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $sqlStatement->getFetchClass () );
-				} else {
-					$resultSet = $pdo->query ( $sqlStatement->getStatement (), \PDO::FETCH_ASSOC );
+				$statementString=$sqlStatement->getStatement ();
+				if("INSERT"==$sqlStatement->getCrudType()){
+					$statementString.="SELECT LAST_INSERT_ID();";
 				}
-				if ("SELECT" == $sqlStatement->getCrudType ()) {
+				if ($sqlStatement->getFetchClass () != null) {
+					
+					$resultSet = $pdo->query ( $statementString, \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $sqlStatement->getFetchClass () );
+				} else {
+					$resultSet = $pdo->query ( $statementString, \PDO::FETCH_ASSOC );
+				}
+				if ("SELECT" == $sqlStatement->getCrudType ()||"INSERT" == $sqlStatement->getCrudType ()) {
 					$out = array ();
 					foreach ( $resultSet as $row ) {
 						$out [] = $row;
