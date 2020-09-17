@@ -569,7 +569,11 @@ class SqlStatement {
 	 * @return string
 	 */
 	public function getStatement() {
-		return implode ( PHP_EOL, $this->statementArgs ) . ";";
+		$statement=implode ( PHP_EOL, $this->statementArgs ).";";
+		if($this->crudType=="INSERT"){
+			$statement.="SELECT LAST_INSERT_ID();";
+		}
+		return $statement;
 	}
 	
 	/**
