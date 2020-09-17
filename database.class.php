@@ -146,11 +146,8 @@ class DatabaseConfig {
 			$result = null;
 			
 			if ($sqlStatement->isPrepared ()) {
-				$statementString=$sqlStatement->getStatement ();
-				if("INSERT"==$sqlStatement->getCrudType()){
-					$statementString.="SELECT LAST_INSERT_ID();";
-				}
-				$pdostmt = $pdo->prepare ($statementString);
+							
+				$pdostmt = $pdo->prepare ($sqlStatement->getStatement (););
 				
 				$pdostmt->execute ( $sqlStatement->getPreparedData () );
 				
@@ -170,15 +167,13 @@ class DatabaseConfig {
 					return $result;
 				}
 			} else {
-				$statementString=$sqlStatement->getStatement ();
-				if("INSERT"==$sqlStatement->getCrudType()){
-					$statementString.="SELECT LAST_INSERT_ID();";
-				}
+				
+				
 				if ($sqlStatement->getFetchClass () != null) {
 					
-					$resultSet = $pdo->query ( $statementString, \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $sqlStatement->getFetchClass () );
+					$resultSet = $pdo->query ( $sqlStatement->getCrudType()), \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $sqlStatement->getFetchClass () );
 				} else {
-					$resultSet = $pdo->query ( $statementString, \PDO::FETCH_ASSOC );
+					$resultSet = $pdo->query ( $sqlStatement->getCrudType()), \PDO::FETCH_ASSOC );
 				}
 				if ("SELECT" == $sqlStatement->getCrudType ()||"INSERT" == $sqlStatement->getCrudType ()) {
 					$out = array ();
