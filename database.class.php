@@ -90,7 +90,7 @@ abstract class SqlSanitizer {
                 $input [$key] = SqlSanitizer::sanitize ( $value );
             }
             return $input;
-        } elseif (is_string ( $input )) {
+        } elseif(is_string ( $input )) {
             $input = htmlspecialchars ( $input, ENT_QUOTES );
             $input = str_replace ( "\n", "", $input );
             return $input;
@@ -165,6 +165,8 @@ class DatabaseConfig {
                     $pdo = null;
                     $result = new SqlResultSet ( $out );
                     return $result;
+                }else if("INSERT"==$sqlStatement->getCrudType()){
+                    return (int)$pdo->lastInsertId();
                 }
             } else {
                 
@@ -184,6 +186,8 @@ class DatabaseConfig {
                     $result = new SqlResultSet ( $out );
                     unset ( $sqlStatement );
                     return $result;
+                }else if("INSERT"==$sqlStatement->getCrudType()){
+                    return (int)$pdo->lastInsertId();
                 }
             }
         } catch ( \PDOException $e ) {
@@ -330,7 +334,13 @@ class SqlStatement {
         if ($this->sanitizeSqlStatements) {
             $update = SqlSanitizer::sanitize ( $update );
         }
-        $this->addExpression ( "SET", "SET " . http_build_query ( $update, "", "," ) );
+        $args=array();
+        foreach($update as $key=>$value){
+                $value="'".$value."'";
+            
+         $args[]="$key=$value";   
+        }
+        $this->addExpression ( "SET", "SET " . implode(",",$args));
         return $this;
     }
     
