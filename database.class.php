@@ -142,7 +142,7 @@ class DatabaseConfig {
         
         try {
             $pdo = new \PDO ( $dsn, $this->dbuser, $this->dbpass, $options );
-            
+            $pdo->beginTransaction();
             $result = null;
             
             if ($sqlStatement->isPrepared ()) {
@@ -150,7 +150,7 @@ class DatabaseConfig {
                 $pdostmt = $pdo->prepare ($sqlStatement->getStatement ());
                 
                 $pdostmt->execute ( $sqlStatement->getPreparedData () );
-                
+                $pdo->commit();
                 if ("SELECT" == $sqlStatement->getCrudType ()) {
                     if ($sqlStatement->getFetchClass () != null) {
                         $resultSet = $pdostmt->fetchAll ( \PDO::FETCH_CLASS | \PDO::FETCH_PROPS_LATE, $sqlStatement->getFetchClass () );
@@ -177,6 +177,7 @@ class DatabaseConfig {
                 } else {
                     $resultSet = $pdo->query ( $sqlStatement->getStatement (), \PDO::FETCH_ASSOC );
                 }
+                $pdo->commit();
                 if ("SELECT" == $sqlStatement->getCrudType ()) {
                     $out = array ();
                     foreach ( $resultSet as $row ) {
@@ -191,6 +192,7 @@ class DatabaseConfig {
                 }
             }
         } catch ( \PDOException $e ) {
+            $pdo->rollBack();
             throw new \PDOException ( $e->getMessage (), ( int ) $e->getCode () );
         }
     }
