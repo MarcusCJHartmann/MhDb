@@ -336,7 +336,9 @@ class SqlStatement {
         }
         $args=array();
         foreach($update as $key=>$value){
+            if(!($value instanceof SqlColumn)){
                 $value="'".$value."'";
+            }
             
          $args[]="$key=$value";   
         }
@@ -571,6 +573,11 @@ class SqlStatement {
             $exp=$limit.", ".$offset;
         }
         $this->addExpression("LIMIT","LIMIT ". $exp);
+        return $this;
+    }
+    
+    public function count($expression="*"){
+        $this->addExpression("COUNT",  "COUNT(".$expression.")");
         return $this;
     }
     
