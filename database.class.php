@@ -300,7 +300,7 @@ class SqlStatement {
      *        	the columns to be selected, can be passed as String or Array
      * @return \MhDb\SqlStatement
      */
-    public function select($columns) {
+    public function select($columns="") {
         $this->crudType = "SELECT";
         $select = "";
         if (is_array ( $columns )) {
